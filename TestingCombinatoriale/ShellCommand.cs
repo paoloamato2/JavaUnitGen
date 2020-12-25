@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
 
 namespace TestingCombinatoriale
 {
@@ -23,7 +26,7 @@ namespace TestingCombinatoriale
                 {
                     UseShellExecute = false,
                     //RedirectStandardOutput = true,
-                    //RedirectStandardError = true,
+                   // RedirectStandardError = true,
                     CreateNoWindow = true,
                     FileName = Exe,
                     Arguments = Input
@@ -31,6 +34,15 @@ namespace TestingCombinatoriale
             };
             _process.Start();
             _process.WaitForExit();
+            StringBuilder sb = new StringBuilder();
+            //string inputcommand = Input.Replace("/C", "");
+            //File.AppendAllText(Directory.GetCurrentDirectory() + @"\log.txt", "Input: "+Input+Environment.NewLine);
+            //while (!_process.StandardOutput.EndOfStream)
+            //{
+            //    string line = _process.StandardOutput.ReadLine()+Environment.NewLine;
+            //    File.AppendAllText(Directory.GetCurrentDirectory()+@"\log.txt",line);
+            //}
+            //File.AppendAllText(Directory.GetCurrentDirectory()+@"\log.txt",_process.StandardOutput.ReadToEnd());
             //if (process.HasExited)
             //{
             //    output = process.StandardOutput.ReadToEnd();

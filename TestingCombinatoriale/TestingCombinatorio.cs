@@ -85,6 +85,7 @@ namespace TestingCombinatoriale
             LoadParallelismOptions();
             CopyJavaTools();
             ClearCombobox();
+            //CleanTempFiles();
         }
 
         private void LoadParallelismOptions()
@@ -104,6 +105,7 @@ namespace TestingCombinatoriale
 
         private void caricaClasseJavaToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
             if (openFileDialogClass.ShowDialog() != DialogResult.OK) return;
             ClearModel();
             ClearCombobox();
@@ -137,11 +139,13 @@ namespace TestingCombinatoriale
 
         private void btnProcedi_Click(object sender, EventArgs e)
         {
+            progBar.Value = 0;
+            File.Delete(Directory.GetCurrentDirectory()+@"\log.txt");
             if (InputValidation()) return;
 
             if (cbTimeout.Checked) timeout = Convert.ToInt32(txtTimeout.Text);
 
-            CleanTempFiles();
+          CleanTempFiles();
 
             var sCode = File.ReadAllText(openFileDialogClass.FileName);
             var packageLine = JavaClassAnalyzer.GetPackageLine(sCode);
@@ -155,32 +159,40 @@ namespace TestingCombinatoriale
             var selectedItem = cbMetodi.SelectedItem as ComboBoxItem;
             var metodo = selectedItem.Nome;
 
-            var sb = CreaModello(metodo);
+           
+            if (!cbSalta.Checked)
+            {
+                var sb = CreaModello(metodo);
 
 
-            var modello = sb.ToString();
+                var modello = sb.ToString();
+
+                var k = Convert.ToInt32(txtK.Text);
+                var CTanswer = InviaRichiesta(modello, k.ToString());
 
 
-            var k = Convert.ToInt32(txtK.Text);
-            var CTanswer = InviaRichiesta(modello, k.ToString());
+                SalvaCsv(CTanswer);
+                MessageBox.Show("File data.csv generato con successo!");
+            }
 
-
-            SalvaCsv(CTanswer);
-            MessageBox.Show("File data.csv generato con successo!");
-
+            progBar.Visible = true;
+            progBar.Value += 100;
 
             SalvaClasseTest(metodo);
             MessageBox.Show("Classe di test generata con successo!");
 
+            progBar.Value += 100;
 
             GeneraOutputJacocoNoMin();
             MessageBox.Show("Output Jacoco senza minimizzazione generato con successo!");
 
+            progBar.Value += 100;
 
             var start = MinimizzaTestSuite(out var testSuite, out var testSuiteRidotta, out var end);
 
             GeneraOutputJacocoMin();
 
+            progBar.Value = 10000;
 
             File.WriteAllText(openFileDialogClass.FileName, sCode);
 
@@ -190,6 +202,8 @@ namespace TestingCombinatoriale
                 MessageBox.Show(
                     "Vuoi modificare i risultati attesi per le sequenze di input appartenenti alla test suite minimizzata?",
                     "Attenzione", MessageBoxButtons.YesNo);
+
+            progBar.Visible = false;
             if (dialogResult != DialogResult.Yes) return;
             var path = Directory.GetCurrentDirectory() + @"\dataMin.csv";
             var data = File.ReadAllText(path);
@@ -198,9 +212,11 @@ namespace TestingCombinatoriale
 
             File.WriteAllText(path, data);
             MessageBox.Show("\"dataMin.csv\" aggiornato con successo!");
+
+            progBar.Visible = false;
         }
 
-        private static void VisualizzaOutput(IReadOnlyCollection<TestCase> testSuite,
+        private  void VisualizzaOutput(IReadOnlyCollection<TestCase> testSuite,
             IReadOnlyCollection<TestCase> testSuiteRidotta, DateTime end, DateTime start)
         {
             MessageBox.Show("Output Jacoco con minimizzazione generato con successo!");
@@ -225,6 +241,9 @@ namespace TestingCombinatoriale
             message.AppendLine("--------------------");
 
             MessageBox.Show(message.ToString());
+
+            string outPath = Directory.GetParent(txtBin.Text) + @"\out";
+            File.WriteAllText(outPath+@"\report.txt",message.ToString());
         }
 
         private DateTime MinimizzaTestSuite(out List<TestCase> testSuite, out List<TestCase> testSuiteRidotta,
@@ -356,16 +375,41 @@ namespace TestingCombinatoriale
             Directory.Delete(target_dir, false);
         }
 
-        private static void CleanTempFiles()
+
+        public List<FileInfo> GetFiles(string path, params string[] extensions)
+        {
+            List<FileInfo> list = new List<FileInfo>();
+            foreach (string ext in extensions)
+                list.AddRange(new DirectoryInfo(path).GetFiles("*" + ext).Where(p =>
+                        p.Extension.Equals(ext, StringComparison.CurrentCultureIgnoreCase))
+                    .ToArray());
+            return list;
+        }
+        private  void CleanTempFiles()
         {
             try
             {
+                DeleteDirectory(txtBin.Text);
+                Directory.CreateDirectory(txtBin.Text);
                 var path = Directory.GetCurrentDirectory();
-                File.Delete(path + @"\data.csv");
+              //  File.Delete(path + @"\data.csv");
                 File.Delete(path + @"\jacoco.exec");
-                DeleteDirectory(path + @"\temp\");
-                DeleteDirectory(path + @"\coperturaNoMin\");
-                DeleteDirectory(path + @"\coperturaConMin\");
+
+                DirectoryInfo Dr = new DirectoryInfo(path);
+                FileInfo[] files = Dr.GetFiles("*.csv").Where(p => p.Extension == ".csv" && p.Name!="data.csv").ToArray();
+                foreach (FileInfo file in files)
+                    try
+                    {
+                        file.Attributes = FileAttributes.Normal;
+                        File.Delete(file.FullName);
+                    }
+                    catch
+                    {
+                    }
+                // DeleteDirectory(path + @"\temp\");
+                // DeleteDirectory(path + @"\coperturaNoMin\");
+                // DeleteDirectory(path + @"\coperturaConMin\");
+
             }
             catch (Exception e)
             {
@@ -381,6 +425,7 @@ namespace TestingCombinatoriale
 
             var srcPath = percorsoSrc;
             var binPath = percorsoBin;
+            string outPath = Directory.GetParent(binPath).FullName + @"\out";
 
             File.Delete(Directory.GetCurrentDirectory() + @"\jacoco.exec");
             File.Delete(binPath + @"\jacoco.exec");
@@ -407,7 +452,7 @@ namespace TestingCombinatoriale
 
             command = @"/C java -jar ""C:\javatools\jacococli.jar"" report """ + binPath + @"\jacoco.exec" +
                       @""" --classfiles """ + binPath + @""" --sourcefiles """ + srcPath +
-                      @""" --html """ + Directory.GetCurrentDirectory() + @"\coperturaConMin" + @"""";
+                      @""" --html """ + outPath + @"\coperturaConMin" + @"""";
             // System.Diagnostics.Process.Start("CMD.exe", command).WaitForExit();
 
             new ShellCommand(command).ExecuteCommand();
@@ -415,7 +460,7 @@ namespace TestingCombinatoriale
 
             command = @"/C java -jar ""C:\javatools\jacococli.jar"" report """ + binPath + @"\jacoco.exec" +
                       @""" --classfiles """ + binPath + @""" --sourcefiles """ + srcPath +
-                      @""" --xml """ + Directory.GetCurrentDirectory() + @"\coperturaConMin\jacoco.xml" + @"""";
+                      @""" --xml """ + outPath + @"\coperturaConMin\jacoco.xml" + @"""";
             //  System.Diagnostics.Process.Start("CMD.exe", command).WaitForExit();
 
             new ShellCommand(command).ExecuteCommand();
@@ -467,6 +512,7 @@ namespace TestingCombinatoriale
 
             Parallel.For(0, csvlines.Length, options, index =>
             {
+                progBar.Value += 9700 / csvlines.Length;
                 var csvline = csvlines[index];
                 var id = index;
                 var valore = csvline;
@@ -558,6 +604,7 @@ namespace TestingCombinatoriale
 
             percorsoSrc = srcPath;
             percorsoBin = binPath;
+            string outPath = Directory.GetParent(binPath).FullName + @"\out";
 
             File.Delete(Directory.GetCurrentDirectory() + @"\jacoco.exec");
             File.Delete(binPath + @"\jacoco.exec");
@@ -611,7 +658,7 @@ namespace TestingCombinatoriale
 
             command = @"/C java -jar ""C:\javatools\jacococli.jar"" report """ + binPath + @"\jacoco.exec" +
                       @""" --classfiles """ + binPath + @""" --sourcefiles """ + srcPath +
-                      @""" --html """ + Directory.GetCurrentDirectory() + @"\coperturaNoMin" + @"""";
+                      @""" --html """ + outPath + @"\coperturaNoMin" + @"""";
             // System.Diagnostics.Process.Start("CMD.exe", command).WaitForExit();
 
             new ShellCommand(command).ExecuteCommand();
@@ -619,7 +666,7 @@ namespace TestingCombinatoriale
 
             command = @"/C java -jar ""C:\javatools\jacococli.jar"" report """ + binPath + @"\jacoco.exec" +
                       @""" --classfiles """ + binPath + @""" --sourcefiles """ + srcPath +
-                      @""" --xml """ + Directory.GetCurrentDirectory() + @"\coperturaNoMin\jacoco.xml" + @"""";
+                      @""" --xml """ + outPath + @"\coperturaNoMin\jacoco.xml" + @"""";
             //  System.Diagnostics.Process.Start("CMD.exe", command).WaitForExit();
 
             new ShellCommand(command).ExecuteCommand();
@@ -891,14 +938,14 @@ namespace TestingCombinatoriale
 
         private void txtSrc_Click(object sender, EventArgs e)
         {
-            if (folderBrowserDialogSrc.ShowDialog() == DialogResult.OK)
-                txtSrc.Text = folderBrowserDialogSrc.SelectedPath;
+       //     if (folderBrowserDialogSrc.ShowDialog() == DialogResult.OK)
+           //     txtSrc.Text = folderBrowserDialogSrc.SelectedPath;
         }
 
         private void txtBin_Click(object sender, EventArgs e)
         {
-            if (folderBrowserDialogBin.ShowDialog() == DialogResult.OK)
-                txtBin.Text = folderBrowserDialogBin.SelectedPath;
+            //if (folderBrowserDialogBin.ShowDialog() == DialogResult.OK)
+             //   txtBin.Text = folderBrowserDialogBin.SelectedPath;
         }
 
         private void infoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -950,6 +997,11 @@ namespace TestingCombinatoriale
 
         private void txtSrc_TextChanged(object sender, EventArgs e)
         {
+            string parentFolder = Directory.GetParent(txtSrc.Text).FullName;
+          
+            txtBin.Text = parentFolder + @"\bin";
+            
+            Directory.CreateDirectory(txtBin.Text);
         }
 
         private void selezionaPathJUnitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -980,6 +1032,52 @@ namespace TestingCombinatoriale
                 txtTimeout.Enabled = true;
             else
                 txtTimeout.Enabled = false;
+        }
+
+        private void cbSalta_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbSalta.Checked)
+            {
+                MessageBox.Show("Inserire il file data.csv da utilizzare nella cartella dell'applicazione.");
+            }
+
+        }
+
+        private void systemInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string javaversion ="";
+            string javacversion = "";
+           
+                try
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo();
+                    psi.FileName = "java.exe";
+                    psi.Arguments = " -version";
+                    psi.RedirectStandardError = true;
+                    psi.UseShellExecute = false;
+                    psi.CreateNoWindow = true;
+
+                    Process pr = Process.Start(psi);
+                    javaversion = "Versione Java: " + pr.StandardError.ReadLine().Split(' ')[2].Replace("\"", "");
+
+                    psi = new ProcessStartInfo();
+                    psi.FileName = "javac.exe";
+                    psi.Arguments = " -version";
+                    psi.RedirectStandardError = true;
+                    psi.RedirectStandardOutput = true;
+                    psi.UseShellExecute = false;
+                    psi.CreateNoWindow = true;
+
+                pr = Process.Start(psi);
+                    javacversion = "Versione Javac: " + pr.StandardOutput.ReadLine().Replace("javac","");
+            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception is " + ex.Message);
+                }
+
+                MessageBox.Show(javaversion + Environment.NewLine + javacversion);
+
         }
     }
 }

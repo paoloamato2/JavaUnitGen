@@ -38,7 +38,7 @@ namespace TestingCombinatoriale
             this.caricaClasseJavaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnProcedi = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblCTWedge = new System.Windows.Forms.Label();
             this.txtK = new System.Windows.Forms.TextBox();
             this.lblKway = new System.Windows.Forms.Label();
             this.lblNomeClasse = new System.Windows.Forms.Label();
@@ -53,6 +53,10 @@ namespace TestingCombinatoriale
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.cbTimeout = new System.Windows.Forms.CheckBox();
             this.txtTimeout = new System.Windows.Forms.TextBox();
+            this.cbSalta = new System.Windows.Forms.CheckBox();
+            this.systemInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label1 = new System.Windows.Forms.Label();
+            this.progBar = new System.Windows.Forms.ProgressBar();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -87,7 +91,8 @@ namespace TestingCombinatoriale
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.infoToolStripMenuItem});
+            this.infoToolStripMenuItem,
+            this.systemInfoToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(800, 28);
@@ -107,7 +112,7 @@ namespace TestingCombinatoriale
             // caricaClasseJavaToolStripMenuItem
             // 
             this.caricaClasseJavaToolStripMenuItem.Name = "caricaClasseJavaToolStripMenuItem";
-            this.caricaClasseJavaToolStripMenuItem.Size = new System.Drawing.Size(210, 26);
+            this.caricaClasseJavaToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.caricaClasseJavaToolStripMenuItem.Text = "Carica Classe Java";
             this.caricaClasseJavaToolStripMenuItem.Click += new System.EventHandler(this.caricaClasseJavaToolStripMenuItem_Click);
             // 
@@ -130,17 +135,17 @@ namespace TestingCombinatoriale
             this.btnProcedi.Click += new System.EventHandler(this.btnProcedi_Click);
             this.btnProcedi.MouseHover += new System.EventHandler(this.btnProcedi_MouseHover);
             // 
-            // label1
+            // lblCTWedge
             // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(12, 399);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(769, 17);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Per la generazione viene sfruttato CTWedge, quindi bisogna rispettare la sintassi" +
+            this.lblCTWedge.AutoSize = true;
+            this.lblCTWedge.ForeColor = System.Drawing.Color.Black;
+            this.lblCTWedge.Location = new System.Drawing.Point(12, 399);
+            this.lblCTWedge.Name = "lblCTWedge";
+            this.lblCTWedge.Size = new System.Drawing.Size(769, 17);
+            this.lblCTWedge.TabIndex = 4;
+            this.lblCTWedge.Text = "Per la generazione viene sfruttato CTWedge, quindi bisogna rispettare la sintassi" +
     " di tale strumento durante la procedura.";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.lblCTWedge.Click += new System.EventHandler(this.label1_Click);
             // 
             // txtK
             // 
@@ -196,6 +201,7 @@ namespace TestingCombinatoriale
             this.txtBin.Name = "txtBin";
             this.txtBin.Size = new System.Drawing.Size(776, 22);
             this.txtBin.TabIndex = 14;
+            this.txtBin.Visible = false;
             this.txtBin.Click += new System.EventHandler(this.txtBin_Click);
             this.txtBin.TextChanged += new System.EventHandler(this.txtBin_TextChanged);
             // 
@@ -209,6 +215,7 @@ namespace TestingCombinatoriale
             this.lblBin.TabIndex = 13;
             this.lblBin.Text = "Inserisci il percorso della cartella che conterrà i risultati della compilazione " +
     "(files .class)";
+            this.lblBin.Visible = false;
             this.lblBin.Click += new System.EventHandler(this.lblBin_Click);
             // 
             // cbParallelismo
@@ -253,11 +260,52 @@ namespace TestingCombinatoriale
             this.txtTimeout.TabIndex = 18;
             this.txtTimeout.TextChanged += new System.EventHandler(this.txtTimeout_TextChanged);
             // 
+            // cbSalta
+            // 
+            this.cbSalta.AutoSize = true;
+            this.cbSalta.Location = new System.Drawing.Point(350, 363);
+            this.cbSalta.Name = "cbSalta";
+            this.cbSalta.Size = new System.Drawing.Size(290, 21);
+            this.cbSalta.TabIndex = 19;
+            this.cbSalta.Text = "Salta la fase di generazione dei test case";
+            this.cbSalta.UseVisualStyleBackColor = true;
+            this.cbSalta.CheckedChanged += new System.EventHandler(this.cbSalta_CheckedChanged);
+            // 
+            // systemInfoToolStripMenuItem
+            // 
+            this.systemInfoToolStripMenuItem.Name = "systemInfoToolStripMenuItem";
+            this.systemInfoToolStripMenuItem.Size = new System.Drawing.Size(100, 24);
+            this.systemInfoToolStripMenuItem.Text = "System Info";
+            this.systemInfoToolStripMenuItem.Click += new System.EventHandler(this.systemInfoToolStripMenuItem_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Location = new System.Drawing.Point(12, 435);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(774, 17);
+            this.label1.TabIndex = 20;
+            this.label1.Text = "Assicurarsi, mediante la voce di menù \"System Info\", che la versione di Java sia " +
+    "maggiore o uguale alla versione di Javac.";
+            // 
+            // progBar
+            // 
+            this.progBar.Location = new System.Drawing.Point(16, 473);
+            this.progBar.Maximum = 10000;
+            this.progBar.Name = "progBar";
+            this.progBar.Size = new System.Drawing.Size(769, 51);
+            this.progBar.TabIndex = 21;
+            this.progBar.Visible = false;
+            // 
             // TestingCombinatorio
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 477);
+            this.ClientSize = new System.Drawing.Size(800, 538);
+            this.Controls.Add(this.progBar);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.cbSalta);
             this.Controls.Add(this.txtTimeout);
             this.Controls.Add(this.cbTimeout);
             this.Controls.Add(this.lblParallelismo);
@@ -269,7 +317,7 @@ namespace TestingCombinatoriale
             this.Controls.Add(this.lblNomeClasse);
             this.Controls.Add(this.lblKway);
             this.Controls.Add(this.txtK);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblCTWedge);
             this.Controls.Add(this.btnProcedi);
             this.Controls.Add(this.lblMetodi);
             this.Controls.Add(this.cbMetodi);
@@ -296,7 +344,7 @@ namespace TestingCombinatoriale
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem caricaClasseJavaToolStripMenuItem;
         private System.Windows.Forms.Button btnProcedi;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblCTWedge;
         private System.Windows.Forms.TextBox txtK;
         private System.Windows.Forms.Label lblKway;
         private System.Windows.Forms.Label lblNomeClasse;
@@ -312,6 +360,10 @@ namespace TestingCombinatoriale
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.CheckBox cbTimeout;
         private System.Windows.Forms.TextBox txtTimeout;
+        private System.Windows.Forms.CheckBox cbSalta;
+        private System.Windows.Forms.ToolStripMenuItem systemInfoToolStripMenuItem;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ProgressBar progBar;
     }
 }
 
