@@ -37,6 +37,7 @@ namespace TestingCombinatoriale
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.caricaClasseJavaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.systemInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnProcedi = new System.Windows.Forms.Button();
             this.lblCTWedge = new System.Windows.Forms.Label();
             this.txtK = new System.Windows.Forms.TextBox();
@@ -54,9 +55,9 @@ namespace TestingCombinatoriale
             this.cbTimeout = new System.Windows.Forms.CheckBox();
             this.txtTimeout = new System.Windows.Forms.TextBox();
             this.cbSalta = new System.Windows.Forms.CheckBox();
-            this.systemInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.progBar = new System.Windows.Forms.ProgressBar();
+            this.cbCopertura = new System.Windows.Forms.CheckBox();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -95,7 +96,7 @@ namespace TestingCombinatoriale
             this.systemInfoToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(800, 28);
+            this.menuStrip.Size = new System.Drawing.Size(800, 30);
             this.menuStrip.TabIndex = 2;
             this.menuStrip.Text = "menuStrip1";
             this.menuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip_ItemClicked);
@@ -105,23 +106,30 @@ namespace TestingCombinatoriale
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.caricaClasseJavaToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
             this.fileToolStripMenuItem.Text = "File";
             this.fileToolStripMenuItem.Click += new System.EventHandler(this.fileToolStripMenuItem_Click);
             // 
             // caricaClasseJavaToolStripMenuItem
             // 
             this.caricaClasseJavaToolStripMenuItem.Name = "caricaClasseJavaToolStripMenuItem";
-            this.caricaClasseJavaToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.caricaClasseJavaToolStripMenuItem.Size = new System.Drawing.Size(210, 26);
             this.caricaClasseJavaToolStripMenuItem.Text = "Carica Classe Java";
             this.caricaClasseJavaToolStripMenuItem.Click += new System.EventHandler(this.caricaClasseJavaToolStripMenuItem_Click);
             // 
             // infoToolStripMenuItem
             // 
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
-            this.infoToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
+            this.infoToolStripMenuItem.Size = new System.Drawing.Size(49, 26);
             this.infoToolStripMenuItem.Text = "Info";
             this.infoToolStripMenuItem.Click += new System.EventHandler(this.infoToolStripMenuItem_Click);
+            // 
+            // systemInfoToolStripMenuItem
+            // 
+            this.systemInfoToolStripMenuItem.Name = "systemInfoToolStripMenuItem";
+            this.systemInfoToolStripMenuItem.Size = new System.Drawing.Size(100, 26);
+            this.systemInfoToolStripMenuItem.Text = "System Info";
+            this.systemInfoToolStripMenuItem.Click += new System.EventHandler(this.systemInfoToolStripMenuItem_Click);
             // 
             // btnProcedi
             // 
@@ -197,7 +205,7 @@ namespace TestingCombinatoriale
             // txtBin
             // 
             this.txtBin.ForeColor = System.Drawing.Color.Black;
-            this.txtBin.Location = new System.Drawing.Point(12, 255);
+            this.txtBin.Location = new System.Drawing.Point(708, 269);
             this.txtBin.Name = "txtBin";
             this.txtBin.Size = new System.Drawing.Size(776, 22);
             this.txtBin.TabIndex = 14;
@@ -209,7 +217,7 @@ namespace TestingCombinatoriale
             // 
             this.lblBin.AutoSize = true;
             this.lblBin.ForeColor = System.Drawing.Color.Black;
-            this.lblBin.Location = new System.Drawing.Point(12, 235);
+            this.lblBin.Location = new System.Drawing.Point(708, 249);
             this.lblBin.Name = "lblBin";
             this.lblBin.Size = new System.Drawing.Size(552, 17);
             this.lblBin.TabIndex = 13;
@@ -271,13 +279,6 @@ namespace TestingCombinatoriale
             this.cbSalta.UseVisualStyleBackColor = true;
             this.cbSalta.CheckedChanged += new System.EventHandler(this.cbSalta_CheckedChanged);
             // 
-            // systemInfoToolStripMenuItem
-            // 
-            this.systemInfoToolStripMenuItem.Name = "systemInfoToolStripMenuItem";
-            this.systemInfoToolStripMenuItem.Size = new System.Drawing.Size(100, 24);
-            this.systemInfoToolStripMenuItem.Text = "System Info";
-            this.systemInfoToolStripMenuItem.Click += new System.EventHandler(this.systemInfoToolStripMenuItem_Click);
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -298,11 +299,22 @@ namespace TestingCombinatoriale
             this.progBar.TabIndex = 21;
             this.progBar.Visible = false;
             // 
+            // cbCopertura
+            // 
+            this.cbCopertura.AutoSize = true;
+            this.cbCopertura.Location = new System.Drawing.Point(13, 240);
+            this.cbCopertura.Name = "cbCopertura";
+            this.cbCopertura.Size = new System.Drawing.Size(244, 21);
+            this.cbCopertura.TabIndex = 22;
+            this.cbCopertura.Text = "Valuta copertura dell\'intera classe";
+            this.cbCopertura.UseVisualStyleBackColor = true;
+            // 
             // TestingCombinatorio
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 538);
+            this.Controls.Add(this.cbCopertura);
             this.Controls.Add(this.progBar);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cbSalta);
@@ -364,6 +376,7 @@ namespace TestingCombinatoriale
         private System.Windows.Forms.ToolStripMenuItem systemInfoToolStripMenuItem;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ProgressBar progBar;
+        private System.Windows.Forms.CheckBox cbCopertura;
     }
 }
 

@@ -205,7 +205,8 @@ namespace TestingCombinatoriale
 
             progBar.Visible = false;
             if (dialogResult != DialogResult.Yes) return;
-            var path = Directory.GetCurrentDirectory() + @"\dataMin.csv";
+            string outPath = Directory.GetParent(percorsoBin) + @"\out";
+            var path = outPath + @"\dataMin.csv";
             var data = File.ReadAllText(path);
 
             ShowInputDialog(ref data, "Modifica di \"dataMin.csv\"");
@@ -291,7 +292,8 @@ namespace TestingCombinatoriale
             foreach (var tc in testSuiteRidotta) tsR.AppendLine(tc.Valore);
 
             File.WriteAllText(percorsoBin + @"\data.csv", tsR.ToString());
-            File.WriteAllText(Directory.GetCurrentDirectory() + @"\dataMin.csv", tsR.ToString());
+            string outPath = Directory.GetParent(percorsoBin) + @"\out";
+            File.WriteAllText(outPath + @"\dataMin.csv", tsR.ToString());
 
             end = DateTime.Now;
             return start;
@@ -488,7 +490,8 @@ namespace TestingCombinatoriale
             var methodName = JavaClassAnalyzer.GetMethodName(cbMetodi.SelectedItem.ToString());
 
             var csvlines = File.ReadAllLines(Directory.GetCurrentDirectory() + @"\data.csv");
-            File.WriteAllLines(Directory.GetCurrentDirectory() + @"\dataNoMin.csv", csvlines);
+            string outPath = Directory.GetParent(percorsoBin) + @"\out";
+            File.WriteAllLines(outPath + @"\dataNoMin.csv", csvlines);
 
             var count = 0;
 
@@ -518,7 +521,7 @@ namespace TestingCombinatoriale
                 var valore = csvline;
                 GeneraCoverageTestCase(csvline, id);
                 var jacocoXML = File.ReadAllText(Directory.GetCurrentDirectory() + @"\temp\" + id + @"\jacoco.xml");
-                var lines = JacocoReportAnalyzer.ParseXml(jacocoXML, className, methodName);
+                var lines = JacocoReportAnalyzer.ParseXml(jacocoXML, className, methodName,cbCopertura.Checked);
                 var tc = new TestCase(id, valore, lines);
                 testSuite.Add(tc);
             });

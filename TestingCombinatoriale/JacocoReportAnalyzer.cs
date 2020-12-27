@@ -6,7 +6,7 @@ namespace TestingCombinatoriale
 {
     public static class JacocoReportAnalyzer
     {
-        public static List<JacocoLine> ParseXml(string jacocoXml, string className, string methodName)
+        public static List<JacocoLine> ParseXml(string jacocoXml, string className, string methodName,bool classCoverage)
         {
             var lines = new List<JacocoLine>();
             var sourcefile = GetSourceFileTag(jacocoXml, className);
@@ -17,6 +17,12 @@ namespace TestingCombinatoriale
             if (lineaFinale < lineaIniziale) lineaFinale = int.MaxValue;
 
             if (sourcefile == null) return null;
+
+            if (classCoverage)
+            {
+                lineaIniziale = 0;
+                lineaFinale = int.MaxValue;
+            }
 
             var count = 0;
             foreach (XmlNode node in sourcefile)
